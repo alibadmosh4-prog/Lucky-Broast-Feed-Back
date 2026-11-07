@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Broast - Customer Feedback</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #3b0914;
+      --card-bg: #1a060b;
+      --card-border: #521220;
+      --gold-primary: #ffc702;
+      --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+      --crimson: #8b0000;
+      --burgundy: #581845;
+      --text-main: #f8fafc;
+      --text-muted: #d1d5db;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+    body { 
+      background: radial-gradient(circle at top, #5c0f20 0%, #24050b 60%, #120205 100%); 
+      color: var(--text-main); 
+      padding-bottom: 50px; 
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(180deg, rgba(92, 15, 32, 0.85) 0%, rgba(18, 2, 5, 0.95) 100%);
+      padding: 25px 20px 15px; text-align: center;
+      position: relative; border-bottom: 2px solid #5c0f20;
+    }
+    
+    .brand-logo-container {
+      width: 110px; height: 110px; margin: 0 auto 10px;
+      border-radius: 50%; border: 3px solid var(--gold-primary);
+      background: #111827; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 25px rgba(255, 199, 2, 0.4); overflow: hidden;
+    }
+    .brand-logo-container img { width: 100%; height: 100%; object-fit: cover; }
+
+    .header-title {
+      font-size: 1.8rem; font-weight: 800;
+      background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+    .header-sub { font-size: 0.9rem; color: var(--gold-primary); margin-top: 4px; font-weight: 600; }
+    .header-sub-msg { 
+      font-size: 0.88rem; 
+      color: #ffed4a; 
+      margin-top: 4px; 
+      font-weight: 600; 
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .admin-btn {
+      position: absolute; top: 15px; right: 15px;
+      background: rgba(255, 255, 255, 0.08); color: var(--gold-primary); border: 1px solid rgba(255, 199, 2, 0.4);
+      padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; backdrop-filter: blur(5px);
+    }
+
+    .container { max-width: 650px; margin: 25px auto; padding: 0 15px; }
+
+    .card {
+      background: var(--card-bg); border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 1px solid var(--card-border);
+      padding: 25px; margin-bottom: 25px;
+    }
+    .form-title {
+      font-size: 1.25rem; font-weight: 700; color: var(--gold-primary);
+      margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;
+    }
+
+    .form-group { margin-bottom: 20px; position: relative; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: #f1f5f9; }
+    .optional-tag { font-size: 0.75rem; color: var(--text-muted); font-weight: normal; }
+
+    input, select, textarea {
+      width: 100%; padding: 12px 14px; border: 1px solid var(--card-border);
+      border-radius: 8px; font-size: 0.95rem; background: #120205; color: var(--text-main);
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold-primary); }
+
+    .multi-select-box {
+      background: #120205; border: 1px solid var(--card-border); border-radius: 8px;
+      padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    }
+    .multi-select-options {
+      display: none; position: absolute; width: 100%; max-height: 250px; overflow-y: auto;
+      background: #1a060b; border: 1px solid var(--gold-primary); border-radius: 8px;
+      z-index: 100; margin-top: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.9);
+    }
+    .multi-select-options label {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin: 0;
+      cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: normal;
+    }
+    .multi-select-options label:hover { background: rgba(255, 199, 2, 0.15); }
+    .multi-select-options input[type="checkbox"] { width: auto; }
+
+    .order-type-selector { display: flex; gap: 12px; }
+    .order-type-btn {
+      flex: 1; padding: 12px; border: 1px solid var(--card-border); background: #120205;
+      color: var(--text-muted); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: center;
+      transition: all 0.2s;
+    }
+    .order-type-btn.active {
+      border-color: var(--gold-primary); background: rgba(255, 199, 2, 0.2); color: var(--gold-primary);
+    }
+
+    .star-rating-box {
+      background: #120205; padding: 15px; border-radius: 10px; border: 1px solid var(--card-border); text-align: center;
+    }
+    .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; gap: 10px; }
+    .star-rating input { display: none; }
+    .star-rating label { font-size: 2.2rem; color: #4a1520; cursor: pointer; margin: 0; transition: color 0.15s; }
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label { color: var(--gold-primary); }
+    
+    .rating-description {
+      margin-top: 8px; font-weight: 700; font-size: 1rem; color: var(--gold-primary); min-height: 24px;
+    }
+
+    .aspect-ratings {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px; background: #120205; border: 1px solid var(--card-border); padding: 16px; border-radius: 10px;
+    }
+    .aspect-item { display: flex; justify-content: space-between; align-items: center; background: #1a060b; padding: 10px 12px; border-radius: 8px; }
+    .aspect-label { font-size: 0.85rem; font-weight: 600; }
+    .compact-stars { display: flex; flex-direction: row-reverse; gap: 4px; }
+    .compact-stars input { display: none; }
+    .compact-stars label { font-size: 1.3rem; color: #4a1520; cursor: pointer; margin: 0; }
+    .compact-stars input:checked ~ label,
+    .compact-stars label:hover,
+    .compact-stars label:hover ~ label { color: var(--gold-primary); }
+
+    .voice-section { background: #120205; border: 1px solid var(--card-border); padding: 15px; border-radius: 10px; margin-top: 10px; }
+    .voice-controls { display: flex; align-items: center; gap: 12px; }
+    .btn-rec {
+      background: var(--crimson); color: white; border: none; padding: 10px 16px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    }
+    .rec-status { font-size: 0.85rem; color: var(--text-muted); }
+    audio { width: 100%; margin-top: 12px; height: 38px; }
+
+    .btn-submit {
+      width: 100%; background: var(--gold-gradient); color: #000; border: none;
+      padding: 14px; border-radius: 8px; font-size: 1.05rem; font-weight: 800;
+      cursor: pointer; transition: transform 0.1s; margin-top: 10px;
+    }
+
+    .success-card { text-align: center; padding: 40px 20px; display: none; }
+    .success-card i { font-size: 3.5rem; color: #27ae60; margin-bottom: 15px; }
+
+    .admin-panel { display: none; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    .admin-badge { background: rgba(255, 199, 2, 0.15); color: var(--gold-primary); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+    .btn-export { background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
+    
+    .admin-controls-bar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: #120205; padding: 12px; border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 15px;
+    }
+    .filter-select, .date-filter-input {
+      width: auto; padding: 6px 12px; background: #1a060b; border: 1px solid var(--gold-primary); color: var(--text-main); font-size: 0.85rem; border-radius: 6px;
+    }
+    .btn-reset-date {
+      background: var(--burgundy); color: var(--gold-primary); border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;
+    }
+
+    .review-card-admin { background: #120205; border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; margin-bottom: 15px; }
+    .review-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; gap: 4px; }
+    .review-date-badge { background: #2a0b12; color: var(--gold-primary); padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    .review-ordered { font-weight: 600; color: var(--gold-primary); margin-bottom: 8px; font-size: 0.9rem; }
+    .mini-scores { display: flex; flex-wrap: wrap; gap: 8px; background: #1a060b; padding: 8px; border-radius: 6px; font-size: 0.8rem; margin: 10px 0; }
+    .mini-score-tag { background: #2a0b12; padding: 3px 7px; border-radius: 4px; color: var(--text-main); }
+    .order-type-tag { background: var(--burgundy); color: var(--gold-primary); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); padding: 25px; border-radius: 14px; width: 90%; max-width: 360px; text-align: center; }
+
+    .popup-option-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;
+      padding: 16px; margin: 12px 0; border-radius: 10px; border: 2px solid var(--card-border);
+      background: #120205; color: var(--text-main); font-size: 1.1rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; pointer-events: auto;
+    }
+    .popup-option-btn:hover {
+      border-color: var(--gold-primary); background: rgba(255, 199, 2, 0.15); color: var(--gold-primary);
+    }
+  </style>
+
+  <!-- Firebase Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDx5Haj7cVgL8tgiHUHS76akagwLOi8i6Y",
+      authDomain: "lucky-feed-back-f5a03.firebaseapp.com",
+      projectId: "lucky-feed-back-f5a03",
+      storageBucket: "lucky-feed-back-f5a03.firebasestorage.app",
+      messagingSenderId: "266383647454",
+      appId: "1:266383647454:web:3b6b7d203a7d40aae3184f",
+      measurementId: "G-16L97GFQV6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDocs = getDocs;
+    window.query = query;
+    window.orderBy = orderBy;
+  </script>
+</head>
+<body>
+
+  <!-- Entry Order Type Choice Popup -->
+  <div id="orderTypeModal" class="modal" style="display: flex;">
+    <div class="modal-content" style="position: relative; z-index: 1001;">
+      <h3 style="color: var(--gold-primary); font-size: 1.3rem; margin-bottom: 6px;">Welcome to Lucky Broast</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">How did you enjoy your meal today?</p>
+      
+      <button type="button" class="popup-option-btn" onclick="selectOrderType('Dine-in')">
+        <i class="fa-solid fa-utensils" style="color: var(--gold-primary);"></i> Dine-in
+      </button>
+
+      <button type="button" class="popup-option-btn" onclick="selectOrderType('Takeaway')">
+        <i class="fa-solid fa-bag-shopping" style="color: var(--gold-primary);"></i> Takeaway
+      </button>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand-logo-container">
+      <img src="rcjd-logo.jpg" alt="Lucky Broast Logo" onerror="this.src='https://via.placeholder.com/110?text=Lucky+Broast'">
+    </div>
+    <div class="header-title">LUCKY BROAST</div>
+    <div class="header-sub">Eat Healthy, Think Better</div>
+    <div class="header-sub-msg">Help Us Make Your Next Visit Even More Special!</div>
+    <button class="admin-btn" onclick="openAdminModal()">
+      <i class="fa-solid fa-lock"></i> Admin
+    </button>
+  </header>
+
+  <div class="container">
+    
+    <div id="customerSection" class="card">
+      <div class="form-title">Share Your Experience</div>
+      
+      <form id="feedbackForm">
+        
+        <div class="form-group">
+          <label>Order Type *</label>
+          <div class="order-type-selector">
+            <div id="btnDineIn" class="order-type-btn" onclick="setFormOrderType('Dine-in')"><i class="fa-solid fa-utensils"></i> Dine-in</div>
+            <div id="btnTakeaway" class="order-type-btn" onclick="setFormOrderType('Takeaway')"><i class="fa-solid fa-bag-shopping"></i> Takeaway</div>
+          </div>
+          <input type="hidden" id="selectedOrderType" required value="">
+        </div>
+
+        <div class="form-group">
+          <label for="custName">Your Name *</label>
+          <input type="text" id="custName" required placeholder="Enter your name here.">
+        </div>
+
+        <div class="form-group">
+          <label for="custPhone">Phone Number <span class="optional-tag">(Optional)</span></label>
+          <input type="tel" id="custPhone" placeholder="03XXXXXXXXX">
+        </div>
+
+        <div class="form-group">
+          <label>What Did You Order? <span class="optional-tag">(Optional)</span></label>
+          <div class="multi-select-box" onclick="toggleMultiSelect()">
+            <span id="selectedItemsText">-- Select Menu Items --</span>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--gold-primary);"></i>
+          </div>
+          <div class="multi-select-options" id="multiSelectDropdown">
+            <!-- Full Updated Menu Items -->
+            <label><input type="checkbox" value="Plain Fries" onchange="updateSelectedItems()"> Plain Fries</label>
+            <label><input type="checkbox" value="Masala Fries" onchange="updateSelectedItems()"> Masala Fries</label>
+            <label><input type="checkbox" value="Cheese Fries" onchange="updateSelectedItems()"> Cheese Fries</label>
+            <label><input type="checkbox" value="Mayo Garlic Fries" onchange="updateSelectedItems()"> Mayo Garlic Fries</label>
+            <label><input type="checkbox" value="Chicken Nuggets 10pcs" onchange="updateSelectedItems()"> Chicken Nuggets 10pcs</label>
+            <label><input type="checkbox" value="Arabian Injected Nuggets 10pcs" onchange="updateSelectedItems()"> Arabian Injected Nuggets 10pcs</label>
+            <label><input type="checkbox" value="Lahori Fish 4pcs" onchange="updateSelectedItems()"> Lahori Fish 4pcs</label>
+            <label><input type="checkbox" value="Crispy Wings 5pcs" onchange="updateSelectedItems()"> Crispy Wings 5pcs</label>
+            <label><input type="checkbox" value="Plain Broast Qtr" onchange="updateSelectedItems()"> Plain Broast Qtr</label>
+            <label><input type="checkbox" value="Plain Broast Half" onchange="updateSelectedItems()"> Plain Broast Half</label>
+            <label><input type="checkbox" value="Plain Broast Full" onchange="updateSelectedItems()"> Plain Broast Full</label>
+            <label><input type="checkbox" value="Crispy Broast Qtr" onchange="updateSelectedItems()"> Crispy Broast Qtr</label>
+            <label><input type="checkbox" value="Crispy Broast Half" onchange="updateSelectedItems()"> Crispy Broast Half</label>
+            <label><input type="checkbox" value="Crispy Broast Full" onchange="updateSelectedItems()"> Crispy Broast Full</label>
+            <label><input type="checkbox" value="Mayo Garlic Broast Qtr" onchange="updateSelectedItems()"> Mayo Garlic Broast Qtr</label>
+            <label><input type="checkbox" value="Mayo Garlic Broast Half" onchange="updateSelectedItems()"> Mayo Garlic Broast Half</label>
+            <label><input type="checkbox" value="Mayo Garlic Broast Full" onchange="updateSelectedItems()"> Mayo Garlic Broast Full</label>
+            <label><input type="checkbox" value="Chatpata Broast Qtr" onchange="updateSelectedItems()"> Chatpata Broast Qtr</label>
+            <label><input type="checkbox" value="Chatpata Broast Half" onchange="updateSelectedItems()"> Chatpata Broast Half</label>
+            <label><input type="checkbox" value="Chatpata Broast Full" onchange="updateSelectedItems()"> Chatpata Broast Full</label>
+            <label><input type="checkbox" value="Cheese Broast Qtr" onchange="updateSelectedItems()"> Cheese Broast Qtr</label>
+            <label><input type="checkbox" value="Cheese Broast Half" onchange="updateSelectedItems()"> Cheese Broast Half</label>
+            <label><input type="checkbox" value="Cheese Broast Full" onchange="updateSelectedItems()"> Cheese Broast Full</label>
+            <label><input type="checkbox" value="Injected Broast Qtr" onchange="updateSelectedItems()"> Injected Broast Qtr</label>
+            <label><input type="checkbox" value="Injected Broast Half" onchange="updateSelectedItems()"> Injected Broast Half</label>
+            <label><input type="checkbox" value="Injected Broast Full" onchange="updateSelectedItems()"> Injected Broast Full</label>
+            <label><input type="checkbox" value="Zinger Burger" onchange="updateSelectedItems()"> Zinger Burger</label>
+            <label><input type="checkbox" value="Spicy Zinger Burger" onchange="updateSelectedItems()"> Spicy Zinger Burger</label>
+            <label><input type="checkbox" value="Zinger Cheese Burger" onchange="updateSelectedItems()"> Zinger Cheese Burger</label>
+            <label><input type="checkbox" value="Jumbo Zinger Burger" onchange="updateSelectedItems()"> Jumbo Zinger Burger</label>
+            <label><input type="checkbox" value="Munch Burger" onchange="updateSelectedItems()"> Munch Burger</label>
+            <label><input type="checkbox" value="Chicken Burger" onchange="updateSelectedItems()"> Chicken Burger</label>
+            <label><input type="checkbox" value="Chicken Cheese Burger" onchange="updateSelectedItems()"> Chicken Cheese Burger</label>
+            <label><input type="checkbox" value="Chicken Jumbo Burger" onchange="updateSelectedItems()"> Chicken Jumbo Burger</label>
+            <label><input type="checkbox" value="Beef Jumbo Burger" onchange="updateSelectedItems()"> Beef Jumbo Burger</label>
+            <label><input type="checkbox" value="Beef Burger" onchange="updateSelectedItems()"> Beef Burger</label>
+            <label><input type="checkbox" value="Beef Cheese Burger" onchange="updateSelectedItems()"> Beef Cheese Burger</label>
+            <label><input type="checkbox" value="Fish Burger" onchange="updateSelectedItems()"> Fish Burger</label>
+            <label><input type="checkbox" value="Chapli Burger" onchange="updateSelectedItems()"> Chapli Burger</label>
+            <label><input type="checkbox" value="BBQ Burger" onchange="updateSelectedItems()"> BBQ Burger</label>
+            <label><input type="checkbox" value="Club Sandwich" onchange="updateSelectedItems()"> Club Sandwich</label>
+            <label><input type="checkbox" value="Chicken Sandwich" onchange="updateSelectedItems()"> Chicken Sandwich</label>
+            <label><input type="checkbox" value="BBQ Club Sandwich" onchange="updateSelectedItems()"> BBQ Club Sandwich</label>
+            <label><input type="checkbox" value="BBQ Chicken Sandwich" onchange="updateSelectedItems()"> BBQ Chicken Sandwich</label>
+            <label><input type="checkbox" value="Crispy Club Sandwich" onchange="updateSelectedItems()"> Crispy Club Sandwich</label>
+            <label><input type="checkbox" value="Malai Botibel>
+                <input type="radio" id="time2" name="timeRating" value="2"/><label for="time2">★</label>
+                <input type="radio" id="time1" name="timeRating" value="1"/><label for="time1">★</label>
+              </div>
+            </div>
+
+            <div class="aspect-item">
+              <span class="aspect-label">🤝 Staff Hospitality: *</span>
+              <div class="compact-stars">
+                <input type="radio" id="staff5" name="staffRating" value="5" required/><label for="staff5">★</label>
+                <input type="radio" id="staff4" name="staffRating" value="4"/><label for="staff4">★</label>
+                <input type="radio" id="staff3" name="staffRating" value="3"/><label for="staff3">★</label>
+                <input type="radio" id="staff2" name="staffRating" value="2"/><label for="staff2">★</label>
+                <input type="radio" id="staff1" name="staffRating" value="1"/><label for="staff1">★</label>
+              </div>
+            </div>
+
+            <div class="aspect-item">
+              <span class="aspect-label">🏛️ Ambiance: *</span>
+              <div class="compact-stars">
+                <input type="radio" id="amb5" name="ambianceRating" value="5" required/><label for="amb5">★</label>
+                <input type="radio" id="amb4" name="ambianceRating" value="4"/><label for="amb4">★</label>
+                <input type="radio" id="amb3" name="ambianceRating" value="3"/><label for="amb3">★</label>
+                <input type="radio" id="amb2" name="ambianceRating" value="2"/><label for="amb2">★</label>
+                <input type="radio" id="amb1" name="ambianceRating" value="1"/><label for="amb1">★</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Overall Rating Second -->
+        <div class="form-group">
+          <label>Overall Rating *</label>
+          <div class="star-rating-box">
+            <div class="star-rating">
+              <input type="radio" id="st5" name="overallStar" value="5" required onclick="setRatingText('Superb')"/><label for="st5">★</label>
+              <input type="radio" id="st4" name="overallStar" value="4" onclick="setRatingText('Excellent')"/><label for="st4">★</label>
+              <input type="radio" id="st3" name="overallStar" value="3" onclick="setRatingText('Satisfied')"/><label for="st3">★</label>
+              <input type="radio" id="st2" name="overallStar" value="2" onclick="setRatingText('Needs Improvement')"/><label for="st2">★</label>
+              <input type="radio" id="st1" name="overallStar" value="1" onclick="setRatingText('Poor')"/><label for="st1">★</label>
+            </div>
+            <div class="rating-description" id="ratingText">Select Rating</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="custComment">Your Feedback (Type or Record Voice) *</label>
+          <textarea id="custComment" rows="3" placeholder="Write your suggestions and complaints here..."></textarea>
+
+          <div class="voice-section">
+            <div class="voice-controls">
+              <button type="button" id="recBtn" class="btn-rec"><i class="fa-solid fa-microphone"></i> Record Voice</button>
+              <span id="recStatus" class="rec-status">Tap to speak your review</span>
+            </div>
+            <audio id="audioPreview" controls style="display:none;"></audio>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">SUBMIT REVIEW</button>
+      </form>
+    </div>
+
+    <div id="successCard" class="card success-card">
+      <i class="fa-solid fa-circle-check"></i>
+      <h2>Thank You!</h2>
+      <p style="color: var(--text-muted); margin-top: 5px;">Your valuable feedback has been submitted successfully.</p>
+      <button onclick="resetForm()" class="btn-submit" style="margin-top: 20px; width: auto; padding: 10px 24px;">Submit Another Review</button>
+    </div>
+
+    <div id="adminPanel" class="admin-panel card">
+      <div class="admin-header">
+        <div>
+          <h2 style="color: var(--gold-primary);">Owner Dashboard</h2>
+          <span class="admin-badge">Last 60 Days Analytics</span>
+          <div id="liveStatus" style="font-size:0.8rem; color: var(--text-muted); margin-top:6px;">Connecting...</div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <!-- Admin Filter Option -->
+          <select id="adminFilter" class="filter-select" onchange="renderAdminReviews()">
+            <option value="All">All Orders</option>
+            <option value="Dine-in">Dine-in Only</option>
+            <option value="Takeaway">Takeaway Only</option>
+          </select>
+
+          <button class="btn-export" onclick="exportCSV()"><i class="fa-solid fa-download"></i> CSV Excel</button>
+          <button onclick="closeAdmin()" class="btn-submit" style="background:#4a1520; color:#fff; padding: 6px 12px; font-size: 0.85rem; width: auto; margin-top:0;">Exit</button>
+        </div>
+      </div>
+
+      <div id="adminReviewsList"></div>
+    </div>
+
+  </div>
+
+  <div id="pinModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 12px; color: var(--gold-primary);">Admin Verification</h3>
+      <input type="password" id="pinInput" placeholder="Enter PIN (Default: 1234)" style="text-align: center; font-size: 1.1rem; margin-bottom: 18px;">
+      <div style="display:flex; gap:10px;">
+        <button class="btn-submit" onclick="verifyPin()">Login</button>
+        <button class="btn-submit" style="background:#4a1520; color:#fff;" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let reviewsData = [];
+    let adminPin = null;
+    let liveTimer = null;
+    let lastSignature = '';
+    const voiceUrlCache = {};
+    const LIVE_INTERVAL_MS = 5000;
+
+    const escapeHtml = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const newClientId = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
+
+    async function postReview(review) {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(review)
+      });
+      if (!res.ok) throw new Error('Save failed (' + res.status + ')');
+      return res.json();
+    }
+
+    // Upload reviews that were saved only on this device (old version / offline), then clear them locally.
+    async function syncPendingReviews() {
+      let pending = [];
+      try { pending = JSON.parse(localStorage.getItem('lb_reviews_db')) || []; } catch (e) {}
+      if (!pending.length) return;
+      const remaining = [];
+      for (const r of pending) {
+        try { await postReview({ ...r, clientId: r.clientId || 'legacy-' + r.id }); }
+        catch (e) { remaining.push(r); }
+      }
+      if (remaining.length) localStorage.setItem('lb_reviews_db', JSON.stringify(remaining));
+      else localStorage.removeItem('lb_reviews_db');
+    }
+    syncPendingReviews();
+    window.addEventListener('online', syncPendingReviews);
+    let mediaRecorder;
+    let audioChunks = [];
+    let audioBase64 = null;
+    let selectedItemsList = [];
+
+    function selectOrderType(type) {
+      setFormOrderType(type);
+      document.getElementById('orderTypeModal').style.display = 'none';
+    }
+
+    function setFormOrderType(type) {
+      document.getElementById('selectedOrderType').value = type;
+      const btnDine = document.getElementById('btnDineIn');
+      const btnTake = document.getElementById('btnTakeaway');
+      
+      if (type === 'Dine-in') {
+        btnDine.classList.add('active');
+        btnTake.classList.remove('active');
+      } else {
+        btnTake.classList.add('active');
+        btnDine.classList.remove('active');
+      }
+    }
+
+    function toggleMultiSelect() {
+      const drop = document.getElementById('multiSelectDropdown');
+      drop.style.display = drop.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function updateSelectedItems() {
+      const checkboxes = document.querySelectorAll('#multiSelectDropdown input[type="checkbox"]:checked');
+      selectedItemsList = Array.from(checkboxes).map(cb => cb.value);
+      const textSpan = document.getElementById('selectedItemsText');
+      
+      if (selectedItemsList.length === 0) {
+        textSpan.innerText = '-- Select Menu Items --';
+      } else {
+        textSpan.innerText = selectedItemsList.join(', ');
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const box = document.querySelector('.multi-select-box');
+      const drop = document.getElementById('multiSelectDropdown');
+      if (!box.contains(e.target) && !drop.contains(e.target)) {
+        drop.style.display = 'none';
+      }
+    });
+
+    function setRatingText(text) {
+      document.getElementById('ratingText').innerText = text;
+    }
+
+    const recBtn = document.getElementById('recBtn');
+    const recStatus = document.getElementById('recStatus');
+    const audioPreview = document.getElementById('audioPreview');
+
+    recBtn.addEventListener('click', async () => {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        recBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> Re-record Voice';
+        recStatus.innerText = 'Voice recorded!';
+      } else {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = () => {
+              audioBase64 = reader.result;
+              audioPreview.src = audioBase64;
+              audioPreview.style.display = 'block';
+            };
+          };
+
+          mediaRecorder.start();
+          recBtn.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Recording';
+          recStatus.innerText = 'Recording... Speak now!';
+        } catch (err) {
+          alert('Microphone access is required to record voice.');
+        }
+      }
+    });
+
+    document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const orderType = document.getElementById('selectedOrderType').value;
+      if (!orderType) {
+        return alert('Please select Dine-in or Takeaway.');
+      }
+
+      const commentText = document.getElementById('custComment').value.trim();
+      if (!commentText && !audioBase64) {
+        return alert('Please write a comment or record a voice note.');
+      }
+
+      const getVal = (name) => {
+        const el = document.querySelector(`input[name="${name}"]:checked`);
+        return el ? parseInt(el.value) : null;
+      };
+
+      const labels = { 1: 'Poor', 2: 'Needs Improvement', 3: 'Satisfied', 4: 'Excellent', 5: 'Superb' };
+      const overallVal = getVal('overallStar');
+
+      const newReview = {
+        clientId: newClientId(),
+        date: new Date().toISOString(),
+        orderType: orderType,
+        name: document.getElementById('custName').value,
+        phone: document.getElementById('custPhone').value || 'N/A',
+        item: selectedItemsList.length > 0 ? selectedItemsList.join(', ') : 'Not Specified',
+        overall: overallVal,
+        overallLabel: labels[overallVal],
+        taste: getVal('tasteRating'),
+        service: getVal('serviceRating'),
+        onTime: getVal('timeRating'),
+        staff: getVal('staffRating'),
+        ambiance: getVal('ambianceRating'),
+        comment: commentText,
+        voice: audioBase64
+      };
+
+      const submitBtn = this.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+      try {
+        await postReview(newReview);
+      } catch (err) {
+        // Keep it on this device and retry automatically when back online.
+        const pending = JSON.parse(localStorage.getItem('lb_reviews_db') || '[]');
+        pending.push(newReview);
+        localStorage.setItem('lb_reviews_db', JSON.stringify(pending));
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+
+      document.getElementById('customerSection').style.display = 'none';
+      document.getElementById('successCard').style.display = 'block';
+    });
+
+    function resetForm() {
+      document.getElementById('feedbackForm').reset();
+      selectedItemsList = [];
+      document.getElementById('selectedItemsText').innerText = '-- Select Menu Items --';
+      audioBase64 = null;
+      audioPreview.style.display = 'none';
+      recBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> Record Voice';
+      recStatus.innerText = 'Tap to speak your review';
+      document.getElementById('ratingText').innerText = 'Select Rating';
+      document.getElementById('orderTypeModal').style.display = 'flex';
+      document.getElementById('successCard').style.display = 'none';
+      document.getElementById('customerSection').style.display = 'block';
+    }
+
+    function openAdminModal() {
+      document.getElementById('pinModal').style.display = 'flex';
+      document.getElementById('pinInput').focus();
+    }
+    function closeModal() { document.getElementById('pinModal').style.display = 'none'; }
+
+    async function fetchReviews() {
+      const res = await fetch('/api/reviews', { headers: { 'x-admin-pin': adminPin }, cache: 'no-store' });
+      if (res.status === 401) throw new Error('unauthorized');
+      if (!res.ok) throw new Error('Failed to load reviews');
+      const rows = await res.json();
+      return rows.map(r => ({ ...r, date: r.createdAt }));
+    }
+
+    async function refreshReviews() {
+      try {
+        const rows = await fetchReviews();
+        const signature = rows.map(r => r.id).join(',');
+        reviewsData = rows;
+        setLiveStatus(true);
+        if (signature !== lastSignature) {
+          lastSignature = signature;
+          renderAdminReviews();
+        }
+      } catch (e) {
+        setLiveStatus(false);
+      }
+    }
+
+    function setLiveStatus(ok) {
+      const el = document.getElementById('liveStatus');
+      if (!el) return;
+      el.innerHTML = ok
+        ? '<span style="color:#4caf50;">●</span> Live · updated ' + new Date().toLocaleTimeString()
+        : '<span style="color:#f44336;">●</span> Reconnecting...';
+    }
+
+    function startLiveSync() {
+      stopLiveSync();
+      refreshReviews();
+      liveTimer = setInterval(() => { if (!document.hidden) refreshReviews(); }, LIVE_INTERVAL_MS);
+    }
+    function stopLiveSync() { if (liveTimer) clearInterval(liveTimer); liveTimer = null; }
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && liveTimer) refreshReviews(); });
+
+    async function loadVoice(id, audioEl) {
+      if (!voiceUrlCache[id]) {
+        const res = await fetch('/api/voice/' + id, { headers: { 'x-admin-pin': adminPin } });
+        if (!res.ok) return;
+        voiceUrlCache[id] = URL.createObjectURL(await res.blob());
+      }
+      audioEl.src = voiceUrlCache[id];
+    }
+
+    async function verifyPin() {
+      adminPin = document.getElementById('pinInput').value;
+      let ok = false;
+      try { reviewsData = await fetchReviews(); ok = true; } catch (e) { ok = false; }
+      if (ok) {
+        document.getElementById('pinInput').value = '';
+        closeModal();
+        document.getElementById('orderTypeModal').style.display = 'none';
+        document.getElementById('customerSection').style.display = 'none';
+        document.getElementById('successCard').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        lastSignature = reviewsData.map(r => r.id).join(',');
+        renderAdminReviews();
+        startLiveSync();
+      } else {
+        adminPin = null;
+        alert('Invalid PIN!');
+      }
+    }
+
+    function closeAdmin() {
+      stopLiveSync();
+      adminPin = null;
+      reviewsData = [];
+      lastSignature = '';
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('customerSection').style.display = 'block';
+    }
+
+    function renderAdminReviews() {
+      const listEl = document.getElementById('adminReviewsList');
+      const filterValue = document.getElementById('adminFilter').value;
+      const sixtyDaysAgo = new Date();
+      sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+
+      let recent = reviewsData.filter(r => new Date(r.date) >= sixtyDaysAgo);
+
+      if (filterValue !== 'All') {
+        recent = recent.filter(r => r.orderType === filterValue);
+      }
+
+      if (recent.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; padding: 20px; color: var(--text-muted);">No reviews found for this selection.</p>';
+        return;
+      }
+
+      listEl.innerHTML = recent.map(r => `
+        <div class="review-card-admin">
+          <div class="review-meta">
+            <span><strong>${escapeHtml(r.name)}</strong> (${escapeHtml(r.phone)})</span>
+            <span>${new Date(r.date).toLocaleDateString()}</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+            <span class="order-type-tag">${escapeHtml(r.orderType || 'N/A')}</span>
+            <span class="review-ordered" style="margin-bottom:0;">🛒 Items: ${escapeHtml(r.item)}</span>
+          </div>
+          <div style="color: var(--gold-primary); margin-bottom: 8px;">Overall: ${'★'.repeat(r.overall || 0)} (${escapeHtml(r.overallLabel || (r.overall || '-') + '/5')})</div>
+          <div class="mini-scores">
+            <span class="mini-score-tag">🍗 Taste: ${r.taste}/5</span>
+            <span class="mini-score-tag">🔔 Service: ${r.service || 'N/A'}/5</span>
+            <span class="mini-score-tag">⏱️ Time: ${r.onTime}/5</span>
+            <span class="mini-score-tag">🤝 Staff: ${r.staff}/5</span>
+            <span class="mini-score-tag">🏛️ Ambiance: ${r.ambiance}/5</span>
+          </div>
+          ${r.comment ? `<p style="margin-top: 8px; font-size: 0.9rem;">"${escapeHtml(r.comment)}"</p>` : ''}
+          ${r.hasVoice ? `<audio data-voice-id="${r.id}" controls preload="none" style="margin-top:10px;"></audio>` : ''}
+        </div>
+      `).join('');
+      listEl.querySelectorAll('audio[data-voice-id]').forEach(el => loadVoice(el.dataset.voiceId, el));
+    }
+
+    function exportCSV() {
+      if (reviewsData.length === 0) return alert('No Data to Export');
+      let csv = 'Date,OrderType,Name,Phone,Items,Overall,RatingLabel,Taste,Service,OnTime,StaffHospitality,Ambiance,Comment\n';
+      const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+      reviewsData.forEach(r => {
+        csv += [q(new Date(r.date).toLocaleString()), q(r.orderType), q(r.name), q(r.phone), q(r.item), r.overall ?? '', q(r.overallLabel), r.taste ?? '', r.service ?? '', r.onTime ?? '', r.staff ?? '', r.ambiance ?? '', q(r.comment)].join(',') + '\n';
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Lucky_Broast_Reviews_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+  </script>
+</body>
+</html>
